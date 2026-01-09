@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "drf_yasg",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -131,3 +132,6 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
+
+
+AUTH_USER_MODEL = "users.CustomUser"
