@@ -17,7 +17,11 @@ class CustomUser(AbstractUser):
 
     # Поле "Аватар" с потенциалом на frontend
     avatar = models.ImageField(
-        null=True, blank=True, help_text="Аватар", verbose_name="Аватар"
+        upload_to="avatars/",
+        null=True,
+        blank=True,
+        help_text="Аватар",
+        verbose_name="Аватар",
     )
 
     # Технические поля
