@@ -29,7 +29,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS: list = []
+ALLOWED_HOSTS: list = [
+    "localhost",
+]
 
 # Application definition
 
@@ -43,6 +45,8 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_yasg",
     "users",
+    "rest_framework",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -123,15 +127,16 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "<http://localhost:8000>",
-]
+CORS_ALLOWED_ORIGINS: list[str] = os.getenv("CORS_ALLOWED_ORIGINS").split(";")
+CSRF_TRUSTED_ORIGINS: list[str] = os.getenv("CORS_ALLOWED_ORIGINS").split(";")
 
 CORS_ALLOW_ALL_ORIGINS = False
 
+# Настройки DRF
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
 
 AUTH_USER_MODEL = "users.CustomUser"
