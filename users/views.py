@@ -1,7 +1,19 @@
-from rest_framework import generics
+import json
 
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
+from rest_framework import generics, status
+from rest_framework.response import Response
+
+from config import settings
 from users.models import CustomUser
-from users.serializers import UserCreateSerializer
+from users.serializers import (
+    UserCreateSerializer,
+    UserResetPasswordConfirmSerializer,
+    UserResetPasswordSerializer,
+)
+
+token_generator = PasswordResetTokenGenerator()
 
 
 class CreateUser(generics.CreateAPIView):
@@ -9,3 +21,70 @@ class CreateUser(generics.CreateAPIView):
 
     queryset = CustomUser.objects.all()
     serializer_class = UserCreateSerializer
+
+
+class UserResetPassword(generics.GenericAPIView):
+    """Отправка ссылки для сброса пароля пользователю"""
+
+    serializer_class = UserResetPasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        provided_user = CustomUser.objects.filter(email=request.data["email"]).first()
+
+        if provided_user:
+            token = token_generator.make_token(provided_user)
+            provided_user.token = token
+            provided_user.save()
+
+            uid = provided_user.pk
+            reset_link = f"{settings.BASE_URL}/users/reset_password_confirm?uid={uid}&token={token}"
+            subject = "Сброс пароля"
+
+            data = {"uid": "uid", "token": "token", "new_password": "P4$$W0RD"}
+            message = f"""Для сброса пароля отправьте POST запрос с новым паролем по ссылке: {reset_link}
+
+                        Форма запроса:
+                        {json.dumps(data, indent=4)}
+                """
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [provided_user.email],
+                fail_silently=False,
+            )
+            return Response(
+                {"message": "Инструкция для сброса пароля отправлена на email"},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"detail": "Пользователя с таким email не существует"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class UserResetPasswordConfirm(generics.GenericAPIView):
+    """Сброс пароля по токену и уникальному идентификатору пользователя"""
+
+    def post(self, request, *args, **kwargs):
+        provided_user = CustomUser.objects.filter(pk=request.data["uid"]).first()
+
+        serializer = UserResetPasswordConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if provided_user:
+            if provided_user.token == serializer.validated_data["token"]:
+                provided_user.set_password(serializer.validated_data["new_password"])
+                provided_user.save()
+                return Response({"message": "Пароль успешно изменен"})
+            else:
+                return Response(
+                    {"detail": "Неверный token"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            return Response(
+                {"detail": "Пользователя с таким uid не существует"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

@@ -6,7 +6,7 @@ from users.models import CustomUser
 class UserCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для контроллера на создание пользователя"""
 
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(min_length=8, write_only=True)
 
     class Meta:
         model = CustomUser
@@ -23,6 +23,16 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 
 class UserResetPasswordSerializer(serializers.ModelSerializer):
+    """Сериализатор для запроса на сброс пароля"""
+
     class Meta:
         model = CustomUser
         fields = ("email",)
+
+
+class UserResetPasswordConfirmSerializer(serializers.Serializer):
+    """Сериализатор для изменения пароля"""
+
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8)
