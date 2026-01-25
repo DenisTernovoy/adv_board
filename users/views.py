@@ -26,10 +26,14 @@ class CreateUser(generics.CreateAPIView):
 class UserResetPassword(generics.GenericAPIView):
     """Отправка ссылки для сброса пароля пользователю"""
 
-    serializer_class = UserResetPasswordSerializer
-
     def post(self, request, *args, **kwargs):
-        provided_user = CustomUser.objects.filter(email=request.data["email"]).first()
+
+        serializer = UserResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        provided_user = CustomUser.objects.filter(
+            email=serializer.validated_data["email"]
+        ).first()
 
         if provided_user:
             token = token_generator.make_token(provided_user)

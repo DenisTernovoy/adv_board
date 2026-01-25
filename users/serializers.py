@@ -22,12 +22,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
-class UserResetPasswordSerializer(serializers.ModelSerializer):
+class UserResetPasswordSerializer(serializers.Serializer):
     """Сериализатор для запроса на сброс пароля"""
 
-    class Meta:
-        model = CustomUser
-        fields = ("email",)
+    email = serializers.EmailField()
 
 
 class UserResetPasswordConfirmSerializer(serializers.Serializer):
