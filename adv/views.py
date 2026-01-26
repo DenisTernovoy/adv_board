@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 
@@ -10,6 +11,8 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
 
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ("title",)
 
     def perform_create(self, serializer):
         try:

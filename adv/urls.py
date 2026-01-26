@@ -1,5 +1,6 @@
-from adv.apps import AdvConfig
 from rest_framework.routers import DefaultRouter
+
+from adv.apps import AdvConfig
 from adv.views import AdvertisementViewSet, ReviewViewSet
 
 app_name = AdvConfig.name
