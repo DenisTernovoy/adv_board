@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import send_mail
-from rest_framework import generics, status
+from rest_framework import generics, status, views
 from rest_framework.response import Response
 
 from config import settings
@@ -23,10 +23,10 @@ class CreateUser(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
 
 
-class UserResetPassword(generics.GenericAPIView):
+class UserResetPassword(views.APIView):
     """Отправка ссылки для сброса пароля пользователю"""
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):  # noqa
 
         serializer = UserResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -50,6 +50,7 @@ class UserResetPassword(generics.GenericAPIView):
                         Форма запроса:
                         {json.dumps(data, indent=4)}
                 """
+
             send_mail(
                 subject,
                 message,
@@ -57,6 +58,7 @@ class UserResetPassword(generics.GenericAPIView):
                 [provided_user.email],
                 fail_silently=False,
             )
+
             return Response(
                 {"message": "Инструкция для сброса пароля отправлена на email"},
                 status=status.HTTP_200_OK,
@@ -68,17 +70,19 @@ class UserResetPassword(generics.GenericAPIView):
             )
 
 
-class UserResetPasswordConfirm(generics.GenericAPIView):
+class UserResetPasswordConfirm(views.APIView):
     """Сброс пароля по токену и уникальному идентификатору пользователя"""
 
-    def post(self, request, *args, **kwargs):
-        provided_user = CustomUser.objects.filter(pk=request.data["uid"]).first()
+    def post(self, request, *args, **kwargs):  # noqa
+        provided_user = CustomUser.objects.filter(
+            pk=request.query_params["uid"]
+        ).first()
 
         serializer = UserResetPasswordConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         if provided_user:
-            if provided_user.token == serializer.validated_data["token"]:
+            if provided_user.token == request.query_params["token"]:
                 provided_user.set_password(serializer.validated_data["new_password"])
                 provided_user.save()
                 return Response({"message": "Пароль успешно изменен"})

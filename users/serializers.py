@@ -31,6 +31,4 @@ class UserResetPasswordSerializer(serializers.Serializer):
 class UserResetPasswordConfirmSerializer(serializers.Serializer):
     """Сериализатор для изменения пароля"""
 
-    uid = serializers.CharField()
-    token = serializers.CharField()
     new_password = serializers.CharField(min_length=8)
