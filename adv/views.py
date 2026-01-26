@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 
 from adv.models import Advertisement, Review
+from adv.paginators import AdvertisementPaginator
 from adv.serializers import AdvertisementSerializer, ReviewSerializer
 
 
@@ -13,6 +14,7 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
     serializer_class = AdvertisementSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("title",)
+    pagination_class = AdvertisementPaginator
 
     def perform_create(self, serializer):
         try:
