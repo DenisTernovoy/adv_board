@@ -3,7 +3,7 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
-    """Кастомный класс пользователя"""
+    """Кастомная модель пользователя"""
 
     username = None
 
