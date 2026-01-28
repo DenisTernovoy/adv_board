@@ -53,11 +53,11 @@ jobs:
 
       - name: Run tests
         env:
-          DB_NAME: postgres
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          DB_HOST: localhost
-          DB_PORT: 5432
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
           CORS_ALLOWED_ORIGINS: http://localhost:80;http://localhost:8000
           CSRF_TRUSTED_ORIGINS: http://localhost:80;http://localhost:8000
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
