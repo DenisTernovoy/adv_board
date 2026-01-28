@@ -81,7 +81,7 @@ class TestUsers(APITestCase):
         self.assertIn("refresh", result)
         self.assertIn("access", result)
 
-    @mock.patch("django.core.mail.send_mail")
+    @mock.patch("users.tasks.send_message.delay")
     def test_user_reset_password(self, mock_mail):
         """Тестирование контроллера запроса на сброс пароля"""
 
@@ -99,7 +99,7 @@ class TestUsers(APITestCase):
             result["message"], "Инструкция для сброса пароля отправлена на email"
         )
 
-    @mock.patch("django.core.mail.send_mail")
+    @mock.patch("users.tasks.send_message.delay")
     def test_user_reset_password_invalid(self, mock_mail):
         """Тестирование контроллера запроса на сброс пароля"""
 
