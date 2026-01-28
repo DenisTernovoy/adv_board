@@ -1,7 +1,6 @@
 import json
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.core.mail import send_mail
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
@@ -12,6 +11,7 @@ from users.serializers import (
     UserResetPasswordConfirmSerializer,
     UserResetPasswordSerializer,
 )
+from users.tasks import send_message
 
 token_generator = PasswordResetTokenGenerator()
 
@@ -44,14 +44,14 @@ class UserResetPassword(views.APIView):
             reset_link = f"{settings.BASE_URL}/users/reset_password_confirm?uid={uid}&token={token}"
             subject = "Сброс пароля"
 
-            data = {"uid": "uid", "token": "token", "new_password": "P4$$W0RD"}
+            data = {"new_password": "P4$$W0RD"}
             message = f"""Для сброса пароля отправьте POST запрос с новым паролем по ссылке: {reset_link}
 
                         Форма запроса:
                         {json.dumps(data, indent=4)}
                 """
 
-            send_mail(
+            send_message.delay(
                 subject,
                 message,
                 settings.DEFAULT_FROM_EMAIL,
