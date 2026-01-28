@@ -1,12 +1,16 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 
 from adv.models import Advertisement, Review
 from adv.paginators import AdvertisementPaginator
 from adv.permissions import IsOwner
-from adv.serializers import AdvertisementSerializer, ReviewSerializer
+from adv.serializers import (
+    AdvertisementSerializer,
+    ReviewCreateSerializer,
+    ReviewSerializer,
+)
 
 
 class AdvertisementViewSet(viewsets.ModelViewSet):
@@ -47,13 +51,18 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет для модели отзыва"""
 
     queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
 
     def perform_create(self, serializer):
         try:
             serializer.save(author=self.request.user)
         except Exception:
             raise ValidationError({"detail": "Данный отзыв уже был оставлен Вами."})
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return ReviewCreateSerializer
+        else:
+            return ReviewSerializer
 
     def get_permissions(self):
         if (

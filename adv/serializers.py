@@ -3,8 +3,19 @@ from rest_framework import serializers
 from adv.models import Advertisement, Review
 
 
+class ReviewCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания отзыва"""
+
+    class Meta:
+        model = Review
+        fields = (
+            "text",
+            "ad",
+        )
+
+
 class ReviewSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели отзыва"""
+    """Сериализатор для отзыва"""
 
     author_name = serializers.CharField(source="author", read_only=True)
     ad = serializers.SerializerMethodField()
