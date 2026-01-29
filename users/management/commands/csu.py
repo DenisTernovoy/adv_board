@@ -8,7 +8,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         user = CustomUser.objects.create(
-            first_name="Администратор DJANGO",
+            first_name="Администратор",
+            last_name="DJANGO",
             email="admin@admin.com",
         )
         user.set_password("12345")

@@ -129,7 +129,7 @@ class TestAdv(APITestCase):
         result = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(result["text"], self.review.text)
+        self.assertEqual(result["text"], str(self.review))
         self.assertEqual(result["author_name"], str(self.user))
 
     def test_destroy_review(self):

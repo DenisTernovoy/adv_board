@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.core.management import call_command
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -181,3 +182,16 @@ class TestUsers(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("detail", result)
         self.assertEqual(result["detail"], "Неверный token")
+
+    def test_command_csu(self):
+        """Тестирование команды по созданию суперпользователя"""
+
+        call_command("csu")
+        admin_user = CustomUser.objects.filter(email="admin@admin.com")
+        self.assertEqual(admin_user.exists(), True)
+        instance = admin_user.first()
+
+        self.assertEqual(str(instance), "Администратор DJANGO")
+        self.assertEqual(instance.is_superuser, True)
+        self.assertEqual(instance.is_staff, True)
+        self.assertEqual(instance.role, "admin")
