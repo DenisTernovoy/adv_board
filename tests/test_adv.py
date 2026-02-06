@@ -103,9 +103,9 @@ class TestAdv(APITestCase):
     def test_create_review(self):
         """Тестирование контроллера создания отзыва"""
 
-        url = reverse("adv:reviews-list")
+        url = reverse("adv:reviews-list", kwargs={"ad_pk": self.advertisement.pk})
 
-        data = {"text": "Мне понравилась игрушка", "ad": self.advertisement.pk}
+        data = {"text": "Мне понравилась игрушка"}
 
         response_ok = self.client.post(url, data)
         self.assertEqual(response_ok.status_code, status.HTTP_201_CREATED)
@@ -117,7 +117,10 @@ class TestAdv(APITestCase):
     def test_update_review(self):
         """Тестирование контроллера обновления отзыва"""
 
-        url = reverse("adv:reviews-detail", args=(self.review.pk,))
+        url = reverse(
+            "adv:reviews-detail",
+            kwargs={"pk": self.review.pk, "ad_pk": self.advertisement.pk},
+        )
 
         data = {
             "text": "Неплохая игрушка. Детям понравилась!",
@@ -130,7 +133,10 @@ class TestAdv(APITestCase):
     def test_retrieve_review(self):
         """Тестирование контроллера получения одного отзыва"""
 
-        url = reverse("adv:reviews-detail", args=(self.review.pk,))
+        url = reverse(
+            "adv:reviews-detail",
+            kwargs={"pk": self.review.pk, "ad_pk": self.advertisement.pk},
+        )
 
         response = self.client.get(url)
         result = response.json()
@@ -142,7 +148,10 @@ class TestAdv(APITestCase):
     def test_destroy_review(self):
         """Тестирование контроллера удаления отзыва"""
 
-        url = reverse("adv:reviews-detail", args=(self.review.pk,))
+        url = reverse(
+            "adv:reviews-detail",
+            kwargs={"pk": self.review.pk, "ad_pk": self.advertisement.pk},
+        )
 
         response = self.client.delete(url)
 
@@ -151,7 +160,7 @@ class TestAdv(APITestCase):
     def test_list_review(self):
         """Тестирование контроллера получения списка отзывов"""
 
-        url = reverse("adv:reviews-list")
+        url = reverse("adv:reviews-list", kwargs={"ad_pk": self.advertisement.pk})
 
         response = self.client.get(url)
 

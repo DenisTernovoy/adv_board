@@ -17,6 +17,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         data["author"] = self.context["request"].user
+
         if Review.objects.filter(**data).exists():
             raise ValidationError({"detail": "Такой объект уже существует"})
         return data

@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
 
 from adv.models import Advertisement, Review
 from adv.paginators import AdvertisementPaginator
@@ -41,6 +42,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+
+    def create(self, request, ad_pk=None):
+        data = request.data.copy()
+        data["ad"] = ad_pk
+
+        serializer = ReviewSerializer(data=data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        ad = self.kwargs["ad_pk"]
+        queryset = Review.objects.filter(ad=ad)
+        return queryset
 
     def get_permissions(self):
         if (

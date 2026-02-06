@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "drf_yasg",
     "users",
@@ -143,8 +144,6 @@ CORS_ALLOW_ALL_ORIGINS = False
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "CHECK_REVOKE_TOKEN": True,
-    "REVOKE_TOKEN_CLAIM": True,
 }
 
 # Настройки DRF

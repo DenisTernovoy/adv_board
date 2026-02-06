@@ -1,13 +1,11 @@
 from django.core import mail
 from django.core.management import call_command
-
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+
+from config.celery import app  # noqa
 from users.models import CustomUser
-from config.celery import (  # noqa
-    app,
-)
 
 
 class TestUsers(APITestCase):
