@@ -35,6 +35,7 @@ mypy = "^1.19.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-django = "^4.11.1"
+ipython = "^9.9.0"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = 'config.settings'

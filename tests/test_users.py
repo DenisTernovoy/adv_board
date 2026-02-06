@@ -1,6 +1,6 @@
-from unittest import mock
-
+from django.core import mail
 from django.core.management import call_command
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -82,8 +82,7 @@ class TestUsers(APITestCase):
         self.assertIn("refresh", result)
         self.assertIn("access", result)
 
-    @mock.patch("users.tasks.send_message.delay")
-    def test_user_reset_password(self, mock_mail):
+    def test_user_reset_password(self):
         """Тестирование контроллера запроса на сброс пароля"""
 
         url = reverse("users:reset_password")
@@ -99,9 +98,12 @@ class TestUsers(APITestCase):
         self.assertEqual(
             result["message"], "Инструкция для сброса пароля отправлена на email"
         )
+        msg = mail.outbox[0].body
+        self.assertIn(
+            "Для сброса пароля отправьте POST запрос с новым паролем по ссылке:", msg
+        )
 
-    @mock.patch("users.tasks.send_message.delay")
-    def test_user_reset_password_invalid(self, mock_mail):
+    def test_user_reset_password_invalid(self):
         """Тестирование контроллера запроса на сброс пароля"""
 
         url = reverse("users:reset_password")

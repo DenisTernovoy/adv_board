@@ -22,16 +22,19 @@ class TestAdv(APITestCase):
             "title": "Машинка",
             "price": 1500,
             "description": "Игрушка",
+            "author": self.user,
         }
 
         self.advertisement = Advertisement.objects.create(**data_advertisement)
-        self.advertisement.author = self.user
         self.advertisement.save()
 
-        data_review = {"text": "Неплохая игрушка", "ad": self.advertisement}
+        data_review = {
+            "text": "Неплохая игрушка",
+            "ad": self.advertisement,
+            "author": self.user,
+        }
 
         self.review = Review.objects.create(**data_review)
-        self.review.author = self.user
         self.review.save()
 
         self.client.force_authenticate(self.user)
@@ -44,6 +47,10 @@ class TestAdv(APITestCase):
         data = {"title": "Кукла", "price": 2000, "description": "Игрушка"}
 
         response_ok = self.client.post(url, data)
+
+        adv = Advertisement.objects.get(title="Кукла")
+
+        self.assertEqual(str(adv), f"{data['title']} - {data['price']}")
         self.assertEqual(response_ok.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Advertisement.objects.count(), 2)
         self.assertEqual(response_ok.json()["title"], data["title"])
@@ -130,7 +137,7 @@ class TestAdv(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(result["text"], str(self.review))
-        self.assertEqual(result["author_name"], str(self.user))
+        self.assertEqual(result["author"], self.user.pk)
 
     def test_destroy_review(self):
         """Тестирование контроллера удаления отзыва"""

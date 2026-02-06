@@ -7,17 +7,13 @@ class Advertisement(models.Model):
     """Модель объявления"""
 
     title = models.CharField(max_length=50, verbose_name="Название")
-    price = models.IntegerField(verbose_name="Цена")
+    price = models.PositiveIntegerField(verbose_name="Цена")
     description = models.TextField(verbose_name="Описание")
     author = models.ForeignKey(
-        CustomUser,
-        on_delete=models.CASCADE,
-        verbose_name="Автор",
-        null=True,
-        blank=True,
+        CustomUser, on_delete=models.CASCADE, verbose_name="Автор"
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -43,8 +39,6 @@ class Review(models.Model):
         CustomUser,
         on_delete=models.CASCADE,
         verbose_name="Автор",
-        null=True,
-        blank=True,
         related_name="author",
     )
     ad = models.ForeignKey(
@@ -54,7 +48,7 @@ class Review(models.Model):
         related_name="reviews",
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

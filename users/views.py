@@ -51,12 +51,15 @@ class UserResetPassword(views.APIView):
                         {json.dumps(data, indent=4)}
                 """
 
+            print(message)
+
             send_message.delay(
                 subject,
                 message,
                 settings.DEFAULT_FROM_EMAIL,
-                [provided_user.email],
-                fail_silently=False,
+                [
+                    provided_user.email,
+                ],
             )
 
             return Response(
@@ -84,6 +87,7 @@ class UserResetPasswordConfirm(views.APIView):
         if provided_user:
             if provided_user.token == request.query_params["token"]:
                 provided_user.set_password(serializer.validated_data["new_password"])
+                provided_user.token = token_generator.make_token(provided_user)
                 provided_user.save()
                 return Response({"message": "Пароль успешно изменен"})
             else:
