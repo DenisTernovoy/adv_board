@@ -151,7 +151,7 @@ class UserResetPasswordConfirm(views.APIView):
 
                 tokens = OutstandingToken.objects.filter(user=provided_user)
                 for token in tokens:
-                    BlacklistedToken.objects.create(token=token) # pragma: no cover
+                    BlacklistedToken.objects.create(token=token)  # pragma: no cover
 
                 return Response({"message": "Пароль успешно изменен"})
             else:
