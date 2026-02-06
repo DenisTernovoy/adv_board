@@ -4,8 +4,10 @@ from django.core.management import call_command
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-
 from users.models import CustomUser
+from config.celery import (  # noqa
+    app,
+)
 
 
 class TestUsers(APITestCase):
@@ -92,6 +94,7 @@ class TestUsers(APITestCase):
         }
 
         response = self.client.post(url, data=data)
+
         result = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("message", result)

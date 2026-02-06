@@ -51,8 +51,6 @@ class UserResetPassword(views.APIView):
                         {json.dumps(data, indent=4)}
                 """
 
-            print(message)
-
             send_message.delay(
                 subject,
                 message,
