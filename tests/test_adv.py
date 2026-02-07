@@ -1,3 +1,5 @@
+import warnings
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -10,6 +12,9 @@ class TestAdv(APITestCase):
     """Тестирование приложения adv"""
 
     def setUp(self) -> None:
+
+        warnings.filterwarnings("ignore")
+
         self.user = CustomUser.objects.create(
             first_name="Test",
             last_name="User",

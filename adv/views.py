@@ -53,6 +53,20 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def update(self, request, ad_pk=None, pk=None, **kwargs):
+        partial = kwargs.pop("partial", False)  # Позволяет частичное обновление
+        data = request.data.copy()
+        data["ad"] = ad_pk
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+
+        if serializer.is_valid():
+            # Дополнительная логика перед сохранением
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def get_queryset(self):
         ad = self.kwargs["ad_pk"]
         queryset = Review.objects.filter(ad=ad)

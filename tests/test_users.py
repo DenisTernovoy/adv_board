@@ -1,3 +1,5 @@
+import warnings
+
 from django.core import mail
 from django.core.management import call_command
 from rest_framework import status
@@ -12,6 +14,8 @@ class TestUsers(APITestCase):
     """Тестирование приложения users"""
 
     def setUp(self) -> None:
+
+        warnings.filterwarnings("ignore")
 
         data = {
             "first_name": "Test",
